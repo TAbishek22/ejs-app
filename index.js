@@ -1,19 +1,22 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
+import dotenv from "dotenv"; 
+
+dotenv.config();
 
 const app = express();
 const port = 3000;
 
 // Configure and connect to the PostgreSQL database
 const db = new pg.Client({
-    user: "postgres",
-    host: "localhost",
-    database: "Permalist",
-    password: "Abishek@2",
-    port: 5432,
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_URL.includes("render.com")
+        ? { rejectUnauthorized: false }
+        : false, // Required for some platforms like Render
 });
 
+// Connect to the database
 db.connect()
     .then(() => console.log("Connected to the database"))
     .catch((err) => console.error("Database connection failed:", err.stack));
